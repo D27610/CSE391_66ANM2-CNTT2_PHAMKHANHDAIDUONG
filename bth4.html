@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài Tập Form - Bản Hoàn Chỉnh</title>
+    <style>
+        /* --- STYLE CHO THANH CÔNG CỤ (TOOLBAR) --- */
+        .toolbar {
+            background-color: #f6f6f6;
+            border: 1px solid #ccc;
+            border-bottom: none;
+            width: 96%;
+            padding: 2px;
+            box-sizing: border-box;
+        }
+
+        .toolbar-row {
+            display: flex;
+            align-items: center;
+            padding: 1px 0;
+        }
+
+        .toolbar span {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 18px;
+            height: 18px;
+            margin-right: 2px;
+            cursor: pointer;
+            color: #555;
+            font-size: 11px;
+            border: 1px solid transparent;
+        }
+
+        .toolbar span:hover {
+            border: 1px solid #aaa;
+            background-color: #e8e8e8;
+        }
+
+        /* --- CẤU TRÚC CHUNG --- */
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #fff;
+            width: 800px;
+            padding: 20px 40px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h3 {
+            font-size: 15px;
+            margin: 25px 0 5px 0;
+            color: #000;
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid #999;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        td {
+            padding: 4px 0;
+            vertical-align: top;
+            font-size: 13px;
+        }
+
+        .label {
+            width: 190px;
+            font-weight: bold;
+            color: #333;
+            padding-top: 6px;
+        }
+
+        /* Ô nhập liệu */
+        input[type="text"], input[type="email"], select, textarea {
+            width: 96%;
+            padding: 4px;
+            border: 1px solid #7f9db9;
+            font-size: 13px;
+            box-sizing: border-box;
+        }
+
+        .input-short { width: 55% !important; }
+
+        /* Icon trong ô input */
+        .input-icon-wrapper {
+            position: relative;
+            width: 96%;
+        }
+        .input-icon-wrapper input { width: 100%; padding-right: 25px; }
+        .icon-right {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            color: #666;
+            cursor: default;
+        }
+
+        /* Radio & Checkbox */
+        .radio-group label, .checkbox-group label {
+            margin-bottom: 5px;
+            display: inline-block;
+            font-weight: normal;
+        }
+
+        /* Notes & Textarea */
+        textarea.rich-text {
+            height: 200px;
+            border: 1px solid #ccc;
+            resize: vertical;
+            padding: 8px;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 15px;
+        }
+
+        .sep { color: #ccc; margin: 0 4px; font-size: 14px; }
+
+        /* Captcha & Footer */
+        .captcha-text {
+            font-family: "Courier New", Courier, monospace;
+            font-size: 32px;
+            letter-spacing: 12px;
+            font-weight: bold;
+            color: #333;
+            margin: 10px 0;
+            display: inline-block;
+        }
+
+        .footer {
+            margin-top: 20px;
+            border-top: 2px solid #999;
+            padding-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-nav {
+            background-color: #444;
+            color: white;
+            border: 1px solid #222;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+        }
+
+        .btn-action {
+            background-color: #444;
+            color: white;
+            border: 1px solid #222;
+            padding: 5px 12px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            margin-left: 5px;
+            display: inline-flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <form action="#">
+        
+        <h3>Basic Info</h3>
+        <hr>
+        <table>
+            <tr>
+                <td class="label">Employee ID</td>
+                <td style="padding-top:6px">9</td>
+            </tr>
+            <tr>
+                <td class="label">Last Name</td>
+                <td style="padding-top:6px">Dodsworth</td>
+            </tr>
+            <tr>
+                <td class="label">First Name</td>
+                <td>
+                    <div class="input-icon-wrapper">
+                        <input type="text" value="Anne">
+                        <span class="icon-right">&#128203;</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="label">Gender</td>
+                <td class="radio-group">
+                    <input type="radio" name="g" id="m"><label for="m">Male</label><br>
+                    <input type="radio" name="g" id="f"><label for="f">Female</label><br>
+                    <input type="radio" name="g" id="x"><label for="x">XXX</label><br>
+                    <input type="radio" name="g" id="z" checked><label for="z">ZZZ</label>
+                </td>
+            </tr>
+            <tr>
+                <td class="label">Title</td>
+                <td><input type="text" value="Sales Representative"></td>
+            </tr>
+            <tr>
+                <td class="label">Suffix</td>
+                <td><input type="text" value="Ms."></td>
+            </tr>
+            <tr>
+                <td class="label">BirthDate</td>
+                <td>
+                    <div class="input-icon-wrapper" style="width: 55%;">
+                        <input type="text" value="1969-07-02 00:00:00">
+                        <span style="position: absolute; right: -25px; top: 5px; font-weight: bold;">(?)</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="label">HireDate</td>
+                <td><input type="text" class="input-short" value="1994-11-15 00:00:00"></td>
+            </tr>
+            <tr>
+                <td class="label">SSN # (if applicable)</td>
+                <td>
+                    <div class="input-icon-wrapper">
+                        <input type="text">
+                        <span class="icon-right">&#128274;</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="label">Reports To</td>
+                <td>
+                    <select class="input-short">
+                        <option>Buchanan</option>
+                        <option>Davolio</option>
+                        <option>Fuller</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+
+        <h3>Contact Info</h3>
+        <hr>
+        <table>
+            <tr>
+                <td class="label">Email</td>
+                <td><input type="email" placeholder="name@example.com"></td>
+            </tr>
+            <tr>
+                <td class="label">Address</td>
+                <td><input type="text" value="7 Houndstooth Rd."></td>
+            </tr>
+            <tr>
+                <td class="label">City</td>
+                <td><input type="text" value="London"></td>
+            </tr>
+            <tr>
+                <td class="label">Region</td>
+                <td><input type="text"></td>
+            </tr>
+            <tr>
+                <td class="label">Postal Code</td>
+                <td><input type="text" value="WG2 7LT"></td>
+            </tr>
+            <tr>
+                <td class="label">Country</td>
+                <td>
+                    <select class="input-short">
+                        <option>Russian Federation</option>
+                        <option>UK</option>
+                        <option>USA</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="label">US Home Phone</td>
+                <td><input type="text" value="(234)234-2342"></td>
+            </tr>
+            <tr>
+                <td class="label">Photo</td>
+                <td><input type="text" value="EmpID9.bmp"></td>
+            </tr>
+        </table>
+
+        <h3>Optional Info</h3>
+        <hr>
+        <table>
+            <tr>
+                <td class="label">Notes</td>
+                <td>
+                    <div class="toolbar">
+                        <div class="toolbar-row">
+                            <span style="font-weight:bold">B</span>
+                            <span style="font-style:italic">I</span>
+                            <span style="text-decoration:line-through">S</span>
+                            <span style="text-decoration:underline">U</span>
+                            <span class="sep">|</span>
+                            <span>&#8803;</span> <span>&#8801;</span> <span>&#8802;</span> <span>&#8803;</span>
+                            <span class="sep">|</span>
+                            <span>&#8676;</span> <span>&#8677;</span>
+                            <span class="sep">|</span>
+                            <span>X<sub>2</sub></span> <span>X<sup>2</sup></span>
+                            <span class="sep">|</span>
+                            <span style="color:green">&#8617;</span> <span style="color:green">&#8618;</span>
+                            <span class="sep">|</span>
+                            <span>&#8226;&#129046;</span> <span>1&#129046;</span>
+                            <span class="sep">|</span>
+                            <span>&#128279;</span> <span>&#128280;</span>
+                        </div>
+                        <div class="toolbar-row" style="border-top:1px solid #eee">
+                            <span>&#128443;</span> <span>&#128444;</span> <span>&#128465;</span>
+                            <span class="sep">|</span>
+                            <span style="width:auto; padding:0 3px">H1</span>
+                            <span style="width:auto; padding:0 3px">H2</span>
+                            <span style="width:auto; padding:0 3px">H3</span>
+                            <span class="sep">|</span>
+                            <span style="color:red; font-weight:bold; font-size:14px">X</span>
+                        </div>
+                    </div>
+                    <textarea class="rich-text">Anne has a BA degree in English from St. Lawrence College. She is fluent in French and German.ZZZ</textarea>
+                </td>
+            </tr>
+            <tr>
+                <td class="label">Preferred Shift</td>
+                <td class="checkbox-group">
+                    <input type="checkbox" id="reg"><label for="reg">Regular</label><br>
+                    <input type="checkbox" id="gravy" checked><label for="gravy">Gravy Yard</label>
+                </td>
+            </tr>
+            <tr>
+                <td class="label">Active?</td>
+                <td><input type="checkbox" checked></td>
+            </tr>
+            <tr>
+                <td class="label">Are you human?</td>
+                <td>
+                    <div class="captcha-text">TIDAWO</div>
+                    <div style="text-align: right; width: 96%; font-size: 11px; margin-bottom: 5px;">
+                        <a href="#" style="color:black; text-decoration:none">Click to change</a>
+                    </div>
+                    <input type="text" style="width: 96%;">
+                </td>
+            </tr>
+        </table>
+
+        <div class="footer">
+            <div>
+                <button type="button" class="btn-nav">&#9664;</button>
+                <button type="button" class="btn-nav">&#9654;</button>
+                <div style="font-size:11px; margin-top:5px">* required</div>
+            </div>
+            <div>
+                <button type="submit" class="btn-action"><span>&#128190;</span>&nbsp;Submit</button>
+                <button type="button" class="btn-action"><span>&#10006;</span>&nbsp;Cancel</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>
