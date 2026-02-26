@@ -1,0 +1,101 @@
+/* Thiết lập chung và font Monospace */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    /* Font Courier New tạo ra kiểu chữ máy tính y hệt hình mẫu */
+    font-family: 'Courier New', Courier, monospace; 
+    background-color: #ffffff; /* Nền bên ngoài trắng hoàn toàn */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 50px;
+}
+
+/* Khung viền màu xanh nhẹ */
+.page-border {
+    border: 1.5px solid #90e0ef; 
+    width: 100%;
+    max-width: 1100px;
+    background-color: #ffffff;
+}
+
+.content-container {
+    padding: 110px 80px;
+}
+
+/* Tiêu đề chính: Đây là phần bạn cần nhất */
+.main-title {
+    text-align: center;
+    font-weight: normal; /* Không để đậm để giữ nét mảnh */
+    font-size: 36px;
+    color: #000;
+    line-height: 1.6; /* Khoảng cách dòng thoáng */
+    margin-bottom: 100px;
+    letter-spacing: 1px; /* Giãn cách chữ nhẹ nhàng cho sang trọng */
+}
+
+/* Bố cục 2 cột */
+.columns {
+    display: flex;
+    gap: 75px;
+    align-items: flex-start;
+}
+
+/* Cột bên trái: Thẻ Card */
+.info-card {
+    background: #ffffff;
+    padding: 50px 40px;
+    flex: 1;
+    box-shadow: 0 12px 45px rgba(0, 0, 0, 0.05); /* Bóng đổ rất nhẹ */
+    border-radius: 2px;
+}
+
+.card-heading {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    line-height: 1.5;
+    color: #000;
+}
+
+.card-description {
+    font-size: 14px;
+    color: #888;
+    line-height: 1.9;
+    margin-bottom: 50px;
+}
+
+.author-info .name {
+    font-weight: bold;
+    font-size: 15px;
+    margin-bottom: 5px;
+}
+
+.author-info .role {
+    color: #4895ef;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Cột bên phải: Khối văn bản */
+.text-block {
+    flex: 1.4;
+    font-size: 14px;
+    color: #555;
+    line-height: 1.9;
+}
+
+.text-block p {
+    margin-bottom: 30px;
+}
+
+/* Đoạn văn bản in đậm */
+.highlight-bold {
+    font-weight: bold;
+    color: #222;
+}
