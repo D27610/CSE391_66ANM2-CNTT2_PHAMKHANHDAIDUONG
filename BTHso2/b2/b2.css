@@ -1,0 +1,96 @@
+/* HERO SECTION */
+#hero {
+  /* Đã trỏ thẳng vào thư mục imagesplaces chứa ảnh ocean.jpg */
+  background-image: url('imagesplaces/ocean.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#hero-content {
+  background-color: rgba(51, 51, 51, 0.8);
+  padding: 50px;
+  border-radius: 8px;
+  text-align: center;
+  width: 800px;
+  max-width: 90%;
+}
+
+#hero-content h1 {
+  color: white;
+  font-family: 'Raleway', sans-serif;
+  font-size: 3rem;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  letter-spacing: 2px;
+}
+
+#hero-content p {
+  color: white;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  margin-bottom: 30px;
+  font-family: 'Raleway', sans-serif;
+}
+
+#hero-content a {
+  background-color: #fce138;
+  color: #333;
+  text-decoration: none;
+  padding: 12px 24px;
+  font-family: 'Raleway', sans-serif;
+  font-weight: 700;
+  font-size: 1.2rem;
+  border-radius: 4px;
+}
+
+/* HIGHLIGHTS SECTION */
+#highlights {
+  background-color: #e0fbfc;
+  padding: 60px 5%;
+}
+
+#highlights h2 {
+  text-align: center;
+  font-family: 'Raleway', sans-serif;
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 40px;
+  text-transform: uppercase;
+}
+
+#destinations {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+}
+
+.destination {
+  width: 30%;
+  text-align: center;
+}
+
+.destination img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  margin-bottom: 16px;
+}
+
+.destination p {
+  font-family: 'Raleway', sans-serif;
+  color: #5c5c5c;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.destination strong {
+  color: #00a896;
+}
