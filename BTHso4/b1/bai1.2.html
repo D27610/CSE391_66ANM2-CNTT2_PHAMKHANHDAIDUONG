@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 1.2 - Quản Lý Điểm Sinh Viên</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .input-group {
+            margin-bottom: 10px;
+        }
+        .input-group label {
+            display: inline-block;
+            width: 100px;
+        }
+        .input-group input, .input-group select {
+            padding: 5px;
+            width: 200px;
+        }
+        button {
+            padding: 5px 15px;
+            cursor: pointer;
+        }
+        /* Khu vực bộ lọc và tìm kiếm */
+        .filter-section {
+            background-color: #e9ecef;
+            padding: 15px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        /* Style cho cột Điểm có thể click để sắp xếp */
+        #thScore {
+            cursor: pointer;
+            user-select: none;
+        }
+        #thScore:hover {
+            background-color: #ddd;
+        }
+        .highlight-yellow {
+            background-color: yellow;
+        }
+        .stats {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Quản Lý Điểm Sinh Viên</h2>
+    
+    <fieldset>
+        <legend>Thêm Sinh Viên</legend>
+        <div class="input-group">
+            <label for="txtName">Họ tên:</label>
+            <input type="text" id="txtName" placeholder="Nhập họ tên sinh viên">
+        </div>
+        <div class="input-group">
+            <label for="txtScore">Điểm (0-10):</label>
+            <input type="number" id="txtScore" min="0" max="10" step="0.1" placeholder="Nhập điểm số">
+        </div>
+        <button id="btnAdd">Thêm</button>
+    </fieldset>
+
+    <div class="filter-section">
+        <div>
+            <label for="txtSearch">Tìm kiếm:</label>
+            <input type="text" id="txtSearch" placeholder="Nhập tên cần tìm...">
+        </div>
+        <div>
+            <label for="selFilter">Lọc theo xếp loại:</label>
+            <select id="selFilter">
+                <option value="Tất cả">Tất cả</option>
+                <option value="Giỏi">Giỏi</option>
+                <option value="Khá">Khá</option>
+                <option value="Trung bình">Trung bình</option>
+                <option value="Yếu">Yếu</option>
+            </select>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Họ tên</th>
+                <th id="thScore" title="Click để sắp xếp">Điểm <span id="sortArrow"></span></th>
+                <th>Xếp loại</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            </tbody>
+    </table>
+
+    <div class="stats">
+        <p>Tổng số sinh viên hiển thị: <span id="lblTotalCount">0</span></p>
+        <p>Điểm trung bình (danh sách hiện tại): <span id="lblAverageScore">0.0</span></p>
+    </div>
+</div>
+
+<script>
+    // 1. Dữ liệu gốc và dữ liệu hiển thị
+    let students = [];
+    let filteredStudents = [];
+    let currentSort = 'none'; // 'none', 'asc', 'desc'
+
+    // Các DOM Elements
+    const txtName = document.getElementById('txtName');
+    const txtScore = document.getElementById('txtScore');
+    const btnAdd = document.getElementById('btnAdd');
+    const tableBody = document.getElementById('tableBody');
+    const lblTotalCount = document.getElementById('lblTotalCount');
+    const lblAverageScore = document.getElementById('lblAverageScore');
+    
+    // Các DOM Elements cho Filter & Search
+    const txtSearch = document.getElementById('txtSearch');
+    const selFilter = document.getElementById('selFilter');
+    const thScore = document.getElementById('thScore');
+    const sortArrow = document.getElementById('sortArrow');
+
+    // Hàm lấy loại xếp hạng
+    function getGradeLevel(score) {
+        if (score >= 8.5) return 'Giỏi';
+        if (score >= 7.0) return 'Khá';
+        if (score >= 5.0) return 'Trung bình';
+        return 'Yếu';
+    }
+
+    // 2. Hàm xử lý logic Tìm kiếm, Lọc và Sắp xếp kết hợp
+    function applyFilters() {
+        // Lấy giá trị từ ô tìm kiếm và dropdown
+        const keyword = txtSearch.value.toLowerCase().trim();
+        const rankFilter = selFilter.value;
+
+        // Bắt đầu với mảng gốc
+        filteredStudents = students.filter(student => {
+            // Điều kiện tìm kiếm (str.toLowerCase().includes)
+            const matchName = student.name.toLowerCase().includes(keyword);
+            
+            // Điều kiện lọc
+            const matchRank = (rankFilter === 'Tất cả') || (getGradeLevel(student.score) === rankFilter);
+            
+            return matchName && matchRank;
+        });
+
+        // Áp dụng sắp xếp nếu có
+        if (currentSort === 'asc') {
+            filteredStudents.sort((a, b) => a.score - b.score);
+            sortArrow.innerText = '▲';
+        } else if (currentSort === 'desc') {
+            filteredStudents.sort((a, b) => b.score - a.score);
+            sortArrow.innerText = '▼';
+        } else {
+            sortArrow.innerText = '';
+        }
+
+        // Sau khi xử lý xong dữ liệu, gọi hàm vẽ lại bảng
+        renderTable();
+    }
+
+    // 3. Hàm render bảng (Chỉ vẽ từ mảng filteredStudents)
+    function renderTable() {
+        tableBody.innerHTML = ''; // Xóa nội dung cũ
+        
+        // Hiển thị thông báo nếu không có kết quả
+        if (filteredStudents.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="5">Không có kết quả</td></tr>';
+            lblTotalCount.textContent = '0';
+            lblAverageScore.textContent = '0.0';
+            return;
+        }
+
+        let totalScore = 0;
+
+        filteredStudents.forEach((student, index) => {
+            const tr = document.createElement('tr');
+            
+            if (student.score < 5.0) {
+                tr.classList.add('highlight-yellow');
+            }
+
+            totalScore += student.score;
+            const rank = getGradeLevel(student.score);
+
+            // Gán HTML, lưu ID gốc vào data-index để xóa chính xác
+            tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${student.name}</td>
+                <td>${student.score}</td>
+                <td>${rank}</td>
+                <td><button class="btn-delete" data-index="${student.id}">Xóa</button></td>
+            `;
+            
+            tableBody.appendChild(tr);
+        });
+
+        // Cập nhật thống kê
+        const count = filteredStudents.length;
+        lblTotalCount.textContent = count;
+        lblAverageScore.textContent = (totalScore / count).toFixed(1);
+    }
+
+    // Hàm Thêm sinh viên
+    function addStudent() {
+        const name = txtName.value.trim();
+        const scoreValue = txtScore.value.trim();
+        const score = parseFloat(scoreValue);
+
+        if (name === '' || scoreValue === '' || isNaN(score) || score < 0 || score > 10) {
+            alert('Vui lòng nhập họ tên và điểm hợp lệ (từ 0 đến 10)!');
+            return;
+        }
+
+        // Tạo ID duy nhất cho mỗi sinh viên để thao tác xóa an toàn khi đang lọc
+        students.push({
+            id: Date.now().toString(),
+            name: name,
+            score: score
+        });
+
+        // Thay vì gọi renderTable, ta gọi applyFilters để cập nhật theo trạng thái bộ lọc hiện tại
+        applyFilters();
+
+        txtName.value = '';
+        txtScore.value = '';
+        txtName.focus();
+    }
+
+    // --- CÁC SỰ KIỆN LẮNG NGHE --- //
+
+    btnAdd.addEventListener('click', addStudent);
+    txtScore.addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') addStudent();
+    });
+
+    // Sự kiện tìm kiếm realtime (input)
+    txtSearch.addEventListener('input', applyFilters);
+
+    // Sự kiện thay đổi bộ lọc xếp loại (change)
+    selFilter.addEventListener('change', applyFilters);
+
+    // Sự kiện click tiêu đề "Điểm" để sắp xếp
+    thScore.addEventListener('click', function() {
+        if (currentSort === 'none' || currentSort === 'desc') {
+            currentSort = 'asc';
+        } else {
+            currentSort = 'desc';
+        }
+        applyFilters();
+    });
+
+    // Event Delegation cho nút Xóa
+    tableBody.addEventListener('click', function(event) {
+        if (event.target.classList.contains('btn-delete')) {
+            const idToRemove = event.target.getAttribute('data-index');
+            
+            // Tìm và xóa trong mảng gốc students
+            const indexInOriginalArray = students.findIndex(s => s.id === idToRemove);
+            if (indexInOriginalArray !== -1) {
+                students.splice(indexInOriginalArray, 1);
+            }
+            
+            // Gọi lại applyFilters để cập nhật danh sách hiển thị
+            applyFilters();
+        }
+    });
+
+</script>
+
+</body>
+</html>

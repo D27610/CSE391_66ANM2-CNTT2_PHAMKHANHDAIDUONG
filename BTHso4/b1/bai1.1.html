@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 1.1 - Bảng Điểm Sinh Viên</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: inline-block;
+            width: 100px;
+        }
+        .input-group input {
+            padding: 5px;
+            width: 200px;
+        }
+        button {
+            padding: 5px 15px;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .highlight-yellow {
+            background-color: yellow;
+        }
+        .stats {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Quản Lý Điểm Sinh Viên</h2>
+    
+    <div class="input-group">
+        <label for="txtName">Họ tên:</label>
+        <input type="text" id="txtName" placeholder="Nhập họ tên sinh viên">
+    </div>
+    <div class="input-group">
+        <label for="txtScore">Điểm (0-10):</label>
+        <input type="number" id="txtScore" min="0" max="10" step="0.1" placeholder="Nhập điểm số">
+    </div>
+    <button id="btnAdd">Thêm</button>
+
+    <table>
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Họ tên</th>
+                <th>Điểm</th>
+                <th>Xếp loại</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            </tbody>
+    </table>
+
+    <div class="stats">
+        <p>Tổng số sinh viên: <span id="lblTotalCount">0</span></p>
+        <p>Điểm trung bình của cả lớp: <span id="lblAverageScore">0.0</span></p>
+    </div>
+</div>
+
+<script>
+    // Mảng để lưu danh sách sinh viên
+    let students = [];
+
+    // Các DOM Elements cần thiết
+    const txtName = document.getElementById('txtName');
+    const txtScore = document.getElementById('txtScore');
+    const btnAdd = document.getElementById('btnAdd');
+    const tableBody = document.getElementById('tableBody');
+    const lblTotalCount = document.getElementById('lblTotalCount');
+    const lblAverageScore = document.getElementById('lblAverageScore');
+
+    // Hàm lấy loại xếp hạng dựa trên điểm
+    function getGradeLevel(score) {
+        if (score >= 8.5) return 'Giỏi';
+        if (score >= 7.0) return 'Khá';
+        if (score >= 5.0) return 'Trung bình';
+        return 'Yếu';
+    }
+
+    // Hàm render lại toàn bộ bảng và cập nhật thống kê
+    function renderTable() {
+        // Xóa nội dung cũ
+        tableBody.innerHTML = '';
+        
+        let totalScore = 0;
+
+        // Duyệt qua mảng để tạo các hàng mới
+        students.forEach((student, index) => {
+            const tr = document.createElement('tr');
+            
+            // Nếu điểm dưới 5.0 thì tô màu nền vàng
+            if (student.score < 5.0) {
+                tr.classList.add('highlight-yellow');
+            }
+
+            // Cộng dồn điểm để tính trung bình
+            totalScore += student.score;
+
+            // Xếp loại
+            const rank = getGradeLevel(student.score);
+
+            // Gán HTML cho hàng
+            tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${student.name}</td>
+                <td>${student.score}</td>
+                <td>${rank}</td>
+                <td><button class="btn-delete" data-index="${index}">Xóa</button></td>
+            `;
+            
+            tableBody.appendChild(tr);
+        });
+
+        // Cập nhật thống kê
+        const totalStudents = students.length;
+        lblTotalCount.textContent = totalStudents;
+        
+        if (totalStudents > 0) {
+            const average = totalScore / totalStudents;
+            lblAverageScore.textContent = average.toFixed(1); // Lấy 1 số thập phân
+        } else {
+            lblAverageScore.textContent = '0.0';
+        }
+    }
+
+    // Hàm xử lý khi bấm nút Thêm
+    function addStudent() {
+        const name = txtName.value.trim();
+        const scoreValue = txtScore.value.trim();
+        const score = parseFloat(scoreValue);
+
+        // Kiểm tra tính hợp lệ
+        if (name === '' || scoreValue === '' || isNaN(score) || score < 0 || score > 10) {
+            alert('Vui lòng nhập họ tên và điểm hợp lệ (từ 0 đến 10)!');
+            return;
+        }
+
+        // Thêm vào mảng
+        students.push({
+            name: name,
+            score: score
+        });
+
+        // Render lại bảng
+        renderTable();
+
+        // Xóa trắng ô nhập và đưa con trỏ về ô họ tên
+        txtName.value = '';
+        txtScore.value = '';
+        txtName.focus();
+    }
+
+    // Bắt sự kiện click nút Thêm
+    btnAdd.addEventListener('click', addStudent);
+
+    // Cho phép nhấn Enter ở ô Điểm để thêm
+    txtScore.addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+            addStudent();
+        }
+    });
+
+    // Dùng Event Delegation trên <tbody> để xử lý sự kiện xóa
+    tableBody.addEventListener('click', function(event) {
+        // Kiểm tra xem phần tử được click có phải là nút Xóa không
+        if (event.target.classList.contains('btn-delete')) {
+            // Lấy index từ thuộc tính data-index
+            const indexToRemove = event.target.getAttribute('data-index');
+            
+            // Xóa sinh viên khỏi mảng
+            students.splice(indexToRemove, 1);
+            
+            // Render lại bảng sau khi xóa
+            renderTable();
+        }
+    });
+
+</script>
+
+</body>
+</html>
