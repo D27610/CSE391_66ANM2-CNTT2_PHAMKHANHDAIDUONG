@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 2.2 - Form Đặt Hàng Nâng Cao</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            padding-top: 30px;
+            padding-bottom: 50px;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 450px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group input[type="date"],
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            outline: none;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Validation Borders */
+        .input-error {
+            border: 2px solid red !important;
+        }
+        .input-success {
+            border: 2px solid green !important;
+        }
+        
+        /* Error Message */
+        .error {
+            color: red;
+            font-size: 0.85em;
+            display: none;
+            margin-top: 5px;
+        }
+
+        /* Char Count */
+        .char-count {
+            font-size: 0.85em;
+            color: #666;
+            display: block;
+            text-align: right;
+            margin-top: 2px;
+        }
+        .char-count.over-limit {
+            color: red;
+            font-weight: bold;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 15px;
+        }
+        .radio-group label {
+            font-weight: normal;
+            display: inline;
+        }
+
+        /* Total Price Display */
+        .total-price-box {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #d9534f;
+        }
+
+        button.btn-submit {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button.btn-submit:hover {
+            background-color: #0056b3;
+        }
+
+        /* Modal Overlay cho phần Xác nhận */
+        #confirm-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            width: 350px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .modal-content h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .modal-content p {
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .modal-buttons button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-confirm { background-color: #28a745; color: white; }
+        .btn-cancel { background-color: #dc3545; color: white; }
+
+        /* Vùng hiển thị thành công */
+        #success-section {
+            display: none;
+            text-align: center;
+        }
+        #success-section h2 {
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="form-section">
+        <h2>Form Đặt Hàng</h2>
+        <form id="orderForm" novalidate>
+            
+            <div class="form-group">
+                <label for="product">Tên sản phẩm</label>
+                <select id="product">
+                    <option value="">-- Chọn sản phẩm --</option>
+                    <option value="Áo">Áo (150.000đ)</option>
+                    <option value="Quần">Quần (200.000đ)</option>
+                    <option value="Giày">Giày (500.000đ)</option>
+                </select>
+                <span class="error" id="product-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="quantity">Số lượng</label>
+                <input type="number" id="quantity" min="1" max="99" placeholder="Nhập số lượng (1-99)">
+                <span class="error" id="quantity-error"></span>
+            </div>
+
+            <div class="total-price-box">
+                Tổng tiền: <span id="display-total">0 đ</span>
+            </div>
+
+            <div class="form-group">
+                <label for="delivery-date">Ngày giao hàng</label>
+                <input type="date" id="delivery-date">
+                <span class="error" id="delivery-date-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="address">Địa chỉ giao hàng</label>
+                <input type="text" id="address" placeholder="Nhập địa chỉ nhận hàng">
+                <span class="error" id="address-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="notes">Ghi chú (Không bắt buộc)</label>
+                <textarea id="notes" placeholder="Nhập ghi chú (tối đa 200 ký tự)"></textarea>
+                <span class="char-count" id="notes-count">0/200</span>
+                <span class="error" id="notes-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Phương thức thanh toán</label>
+                <div class="radio-group">
+                    <div><input type="radio" id="cod" name="payment" value="COD"><label for="cod"> COD</label></div>
+                    <div><input type="radio" id="bank" name="payment" value="Chuyển khoản"><label for="bank"> Chuyển khoản</label></div>
+                    <div><input type="radio" id="ewallet" name="payment" value="Ví điện tử"><label for="ewallet"> Ví điện tử</label></div>
+                </div>
+                <span class="error" id="payment-error"></span>
+            </div>
+
+            <button type="submit" class="btn-submit">Đặt Hàng</button>
+        </form>
+    </div>
+
+    <div id="confirm-modal">
+        <div class="modal-content">
+            <h3>Xác nhận đặt hàng?</h3>
+            <p><strong>Sản phẩm:</strong> <span id="summary-product"></span></p>
+            <p><strong>Số lượng:</strong> <span id="summary-quantity"></span></p>
+            <p><strong>Tổng tiền:</strong> <span id="summary-total" style="color:#d9534f; font-weight:bold;"></span></p>
+            <p><strong>Ngày giao:</strong> <span id="summary-date"></span></p>
+            <div class="modal-buttons">
+                <button type="button" class="btn-cancel" id="btnCancel">Hủy</button>
+                <button type="button" class="btn-confirm" id="btnConfirm">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="success-section">
+        <h2>Đặt hàng thành công! 🎉</h2>
+        <p>Cảm ơn bạn đã mua sắm. Đơn hàng sẽ sớm được xử lý.</p>
+    </div>
+
+    <script>
+        // --- 1. BIẾN & DỮ LIỆU ---
+        const prices = {
+            "Áo": 150000,
+            "Quần": 200000,
+            "Giày": 500000
+        };
+        let currentTotal = 0;
+
+        // --- 2. HÀM TIỆN ÍCH (UTILITIES) ---
+        function showError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            const errorSpan = document.getElementById(fieldId + '-error');
+            errorSpan.textContent = message;
+            errorSpan.style.display = 'block';
+            if (field && field.type !== 'radio') {
+                field.classList.remove('input-success');
+                field.classList.add('input-error');
+            }
+        }
+
+        function setSuccess(fieldId) {
+            const field = document.getElementById(fieldId);
+            const errorSpan = document.getElementById(fieldId + '-error');
+            if(errorSpan) {
+                errorSpan.style.display = 'none';
+                errorSpan.textContent = '';
+            }
+            if (field && field.type !== 'radio') {
+                field.classList.remove('input-error');
+                field.classList.add('input-success');
+            }
+        }
+
+        function clearError(fieldId) {
+            const field = document.getElementById(fieldId);
+            const errorSpan = document.getElementById(fieldId + '-error');
+            if(errorSpan) errorSpan.style.display = 'none';
+            if (field && field.type !== 'radio') {
+                field.classList.remove('input-error');
+                field.classList.remove('input-success');
+            }
+        }
+
+        // --- 3. HÀM TÍNH TỔNG TIỀN & ĐẾM KÝ TỰ ---
+        function calculateTotal() {
+            const productVal = document.getElementById('product').value;
+            const quantityVal = parseInt(document.getElementById('quantity').value);
+            
+            if (productVal && prices[productVal] && quantityVal > 0) {
+                currentTotal = prices[productVal] * quantityVal;
+            } else {
+                currentTotal = 0;
+            }
+            // Định dạng tiền tệ
+            document.getElementById('display-total').textContent = currentTotal.toLocaleString('vi-VN') + " đ";
+        }
+
+        function updateCharCount() {
+            const notesEl = document.getElementById('notes');
+            const countEl = document.getElementById('notes-count');
+            const length = notesEl.value.length;
+            
+            countEl.textContent = `${length}/200`;
+            
+            if (length > 200) {
+                countEl.classList.add('over-limit');
+                validateNotes(); // Kích hoạt lỗi ngay nếu vượt quá
+            } else {
+                countEl.classList.remove('over-limit');
+                clearError('notes');
+            }
+        }
+
+        // --- 4. HÀM VALIDATE TỪNG TRƯỜNG ---
+        function validateProduct() {
+            const id = 'product';
+            const val = document.getElementById(id).value;
+            if (val === '') {
+                showError(id, 'Vui lòng chọn một sản phẩm.');
+                return false;
+            }
+            setSuccess(id);
+            return true;
+        }
+
+        function validateQuantity() {
+            const id = 'quantity';
+            const val = document.getElementById(id).value;
+            const num = Number(val);
+            
+            if (val === '') {
+                showError(id, 'Vui lòng nhập số lượng.');
+                return false;
+            }
+            if (!Number.isInteger(num) || num < 1 || num > 99) {
+                showError(id, 'Số lượng phải là số nguyên từ 1 đến 99.');
+                return false;
+            }
+            setSuccess(id);
+            return true;
+        }
+
+        function validateDate() {
+            const id = 'delivery-date';
+            const val = document.getElementById(id).value;
+            
+            if (val === '') {
+                showError(id, 'Vui lòng chọn ngày giao hàng.');
+                return false;
+            }
+
+            // Dùng Date() và so sánh timestamp
+            const selectedDate = new Date(val);
+            selectedDate.setHours(0,0,0,0); // Chuẩn hóa về đầu ngày để so sánh chính xác
+
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            const maxDate = new Date(today);
+            maxDate.setDate(maxDate.getDate() + 30); // Tối đa 30 ngày từ hôm nay
+
+            if (selectedDate.getTime() < today.getTime()) {
+                showError(id, 'Ngày giao hàng không được trong quá khứ.');
+                return false;
+            }
+            if (selectedDate.getTime() > maxDate.getTime()) {
+                showError(id, 'Ngày giao hàng không được quá 30 ngày từ hôm nay.');
+                return false;
+            }
+
+            setSuccess(id);
+            return true;
+        }
+
+        function validateAddress() {
+            const id = 'address';
+            const val = document.getElementById(id).value.trim();
+            if (val === '') {
+                showError(id, 'Địa chỉ giao hàng không được để trống.');
+                return false;
+            }
+            if (val.length < 10) {
+                showError(id, 'Địa chỉ giao hàng phải có ít nhất 10 ký tự.');
+                return false;
+            }
+            setSuccess(id);
+            return true;
+        }
+
+        function validateNotes() {
+            const id = 'notes';
+            const val = document.getElementById(id).value;
+            // Không bắt buộc, nhưng nếu nhập thì không quá 200 ký tự
+            if (val.length > 200) {
+                showError(id, 'Ghi chú không được vượt quá 200 ký tự.');
+                return false;
+            }
+            // Vì không bắt buộc, nếu hợp lệ thì hiển thị xanh (trừ khi rỗng hoàn toàn thì trả về bt)
+            if(val.length > 0) setSuccess(id);
+            else {
+                document.getElementById(id).classList.remove('input-error');
+                document.getElementById(id).classList.remove('input-success');
+                document.getElementById(id + '-error').style.display = 'none';
+            }
+            return true;
+        }
+
+        function validatePayment() {
+            const id = 'payment';
+            const checked = document.querySelector('input[name="payment"]:checked');
+            if (!checked) {
+                showError(id, 'Vui lòng chọn phương thức thanh toán.');
+                return false;
+            }
+            setSuccess(id);
+            return true;
+        }
+
+        // --- 5. GẮN SỰ KIỆN ---
+        
+        // Sự kiện Blur & Input cho các trường văn bản/số/ngày
+        const inputs = [
+            { id: 'product', validator: validateProduct },
+            { id: 'quantity', validator: validateQuantity },
+            { id: 'delivery-date', validator: validateDate },
+            { id: 'address', validator: validateAddress },
+            { id: 'notes', validator: validateNotes }
+        ];
+
+        inputs.forEach(item => {
+            const el = document.getElementById(item.id);
+            el.addEventListener('blur', item.validator);
+            el.addEventListener('input', () => {
+                clearError(item.id);
+                // Nếu là notes thì cập nhật luôn bộ đếm
+                if(item.id === 'notes') updateCharCount();
+            });
+        });
+
+        // Sự kiện tự động tính tiền
+        document.getElementById('product').addEventListener('change', calculateTotal);
+        document.getElementById('quantity').addEventListener('input', calculateTotal);
+
+        // Sự kiện Radio payment
+        const radios = document.querySelectorAll('input[name="payment"]');
+        radios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                clearError('payment');
+                validatePayment();
+            });
+        });
+
+        // --- 6. XỬ LÝ SUBMIT VÀ MODAL XÁC NHẬN ---
+        const form = document.getElementById('orderForm');
+        const modal = document.getElementById('confirm-modal');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Gọi toàn bộ hàm validate bằng toán tử & (bitwise AND) để check hết tất cả
+            const isValid = validateProduct() 
+                          & validateQuantity() 
+                          & validateDate() 
+                          & validateAddress() 
+                          & validateNotes() 
+                          & validatePayment();
+
+            if (isValid) {
+                // Điền thông tin vào Modal
+                document.getElementById('summary-product').textContent = document.getElementById('product').value;
+                document.getElementById('summary-quantity').textContent = document.getElementById('quantity').value;
+                document.getElementById('summary-total').textContent = currentTotal.toLocaleString('vi-VN') + " VNĐ";
+                
+                // Format ngày hiển thị d/m/y cho đẹp
+                const dObj = new Date(document.getElementById('delivery-date').value);
+                const displayDate = `${dObj.getDate()}/${dObj.getMonth()+1}/${dObj.getFullYear()}`;
+                document.getElementById('summary-date').textContent = displayDate;
+
+                // Hiện Modal
+                modal.style.display = 'flex';
+            }
+        });
+
+        // Nút Hủy trong Modal
+        document.getElementById('btnCancel').addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+
+        // Nút Xác nhận trong Modal
+        document.getElementById('btnConfirm').addEventListener('click', function() {
+            modal.style.display = 'none';
+            document.getElementById('form-section').style.display = 'none';
+            document.getElementById('success-section').style.display = 'block';
+        });
+
+    </script>
+</body>
+</html>
